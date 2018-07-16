@@ -1,23 +1,24 @@
 # Lab 6 Softmax Classifier
 import tensorflow as tf
 import numpy as np
+
 tf.set_random_seed(777)  # for reproducibility
 
 # Predicting animal type based on various features
 xy = np.loadtxt('data-04-zoo.csv', delimiter=',', dtype=np.float32)
-x_data = xy[:, 0:-1]
-y_data = xy[:, [-1]]
+x_data = xy[:, 0:-1]  # 첫 번째 열부터 마지막 열 앞까지
+y_data = xy[:, [-1]]  # 마지막 열
 
 print(x_data.shape, y_data.shape)
 
 nb_classes = 7  # 0 ~ 6
 
-X = tf.placeholder(tf.float32, [None, 16])
+X = tf.placeholder(tf.float32, [None, 16])  # N개의 행과, 16개의 열, None 은 N개의 행을 의미함
 Y = tf.placeholder(tf.int32, [None, 1])  # 0 ~ 6
 Y_one_hot = tf.one_hot(Y, nb_classes)  # one hot
-print("one_hot", Y_one_hot)
-Y_one_hot = tf.reshape(Y_one_hot, [-1, nb_classes])
-print("reshape", Y_one_hot)
+print("one_hot", Y_one_hot)  # shape=(?, 1, 7)
+Y_one_hot = tf.reshape(Y_one_hot, [-1, nb_classes])  # -1은 everything 을 의미함
+print("reshape", Y_one_hot)  # shape=(?, 7)
 
 W = tf.Variable(tf.random_normal([16, nb_classes]), name='weight')
 b = tf.Variable(tf.random_normal([nb_classes]), name='bias')
@@ -44,13 +45,15 @@ with tf.Session() as sess:
         sess.run(optimizer, feed_dict={X: x_data, Y: y_data})
         if step % 100 == 0:
             loss, acc = sess.run([cost, accuracy], feed_dict={
-                                 X: x_data, Y: y_data})
+                X: x_data, Y: y_data})
             print("Step: {:5}\tLoss: {:.3f}\tAcc: {:.2%}".format(
                 step, loss, acc))
 
     # Let's see if we can predict
     pred = sess.run(prediction, feed_dict={X: x_data})
     # y_data: (N,1) = flatten => (N, ) matches pred.shape
+    # flatten 은 [[1], [0]] -> [1, 0] 으로 바꿔줌
+    # zip은 배열의 각각의 엘리먼트를 묶어줌
     for p, y in zip(pred, y_data.flatten()):
         print("[{}] Prediction: {} True Y: {}".format(p == int(y), p, int(y)))
 
