@@ -18,16 +18,16 @@ batch_size = 100
 
 # input place holders
 X = tf.placeholder(tf.float32, [None, 784])
-X_img = tf.reshape(X, [-1, 28, 28, 1])   # img 28x28x1 (black/white)
+X_img = tf.reshape(X, [-1, 28, 28, 1])  # img 28x28x1 (black/white)
 Y = tf.placeholder(tf.float32, [None, 10])
 
 # L1 ImgIn shape=(?, 28, 28, 1)
-W1 = tf.Variable(tf.random_normal([3, 3, 1, 32], stddev=0.01))
+W1 = tf.Variable(tf.random_normal([3, 3, 1, 32], stddev=0.01))  # 32 -> 필터를 32개 사용
 #    Conv     -> (?, 28, 28, 32)
 #    Pool     -> (?, 14, 14, 32)
 L1 = tf.nn.conv2d(X_img, W1, strides=[1, 1, 1, 1], padding='SAME')
 L1 = tf.nn.relu(L1)
-L1 = tf.nn.max_pool(L1, ksize=[1, 2, 2, 1],
+L1 = tf.nn.max_pool(L1, ksize=[1, 2, 2, 1],  # 2,2 -> 커널 사이즈 2x2
                     strides=[1, 2, 2, 1], padding='SAME')
 '''
 Tensor("Conv2D:0", shape=(?, 28, 28, 32), dtype=float32)
@@ -36,14 +36,14 @@ Tensor("MaxPool:0", shape=(?, 14, 14, 32), dtype=float32)
 '''
 
 # L2 ImgIn shape=(?, 14, 14, 32)
-W2 = tf.Variable(tf.random_normal([3, 3, 32, 64], stddev=0.01))
+W2 = tf.Variable(tf.random_normal([3, 3, 32, 64], stddev=0.01))  # 64개의 필터를 사용
 #    Conv      ->(?, 14, 14, 64)
 #    Pool      ->(?, 7, 7, 64)
 L2 = tf.nn.conv2d(L1, W2, strides=[1, 1, 1, 1], padding='SAME')
 L2 = tf.nn.relu(L2)
 L2 = tf.nn.max_pool(L2, ksize=[1, 2, 2, 1],
                     strides=[1, 2, 2, 1], padding='SAME')
-L2_flat = tf.reshape(L2, [-1, 7 * 7 * 64])
+L2_flat = tf.reshape(L2, [-1, 7 * 7 * 64]) # fc 에 넣기 전 펼치는 과정
 '''
 Tensor("Conv2D_1:0", shape=(?, 14, 14, 64), dtype=float32)
 Tensor("Relu_1:0", shape=(?, 14, 14, 64), dtype=float32)
@@ -86,7 +86,7 @@ print('Learning Finished!')
 correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(Y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 print('Accuracy:', sess.run(accuracy, feed_dict={
-      X: mnist.test.images, Y: mnist.test.labels}))
+    X: mnist.test.images, Y: mnist.test.labels}))
 
 # Get one and predict
 r = random.randint(0, mnist.test.num_examples - 1)

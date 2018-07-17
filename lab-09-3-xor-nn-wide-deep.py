@@ -9,10 +9,12 @@ x_data = [[0, 0],
           [0, 1],
           [1, 0],
           [1, 1]]
+
 y_data = [[0],
           [1],
           [1],
           [0]]
+
 x_data = np.array(x_data, dtype=np.float32)
 y_data = np.array(y_data, dtype=np.float32)
 
